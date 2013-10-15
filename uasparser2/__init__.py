@@ -150,6 +150,13 @@ class UASparser(object):
 					return True
 			return False
 
+		def match_device(data, result):
+			for test in data['device']['reg']:
+				if test['re'].findall(useragent):
+					result.update(data['device']['details'][test['details_key']])
+					return True
+			return False
+
 		if not useragent:
 			raise UASException("Excepted argument useragent is not given.")
 
@@ -159,9 +166,9 @@ class UASparser(object):
 			data = self.data
 			result = dict(self.empty_result)
 
-			if not match_robots(data, result):
-				if not match_browser(data, result):
-					match_os(data, result)
+			match_robots(data, result) or match_browser(data, result) or match_os(data, result)
+			# Finally try to match the device type.
+			match_device(data, result)
 
 		self.mem_cache.insert(useragent, result)
 
@@ -271,6 +278,7 @@ class UASparser(object):
 		os_template = ['os_family', 'os_name', 'os_url', 'os_company', 'os_company_url', 'os_icon']
 		browser_template = ['typ', 'ua_family', 'ua_url', 'ua_company', 'ua_company_url', 'ua_icon', 'ua_info_url']
 		robot_template = ['ua_family', 'ua_name', 'ua_url', 'ua_company', 'ua_company_url', 'ua_icon', 'ua_info_url']
+		device_template =  ['ua_device_type', 'ua_device_icon', 'ua_device_info_url']
 
 		data = read_ini_file(file_content)
 
@@ -282,6 +290,7 @@ class UASparser(object):
 			'robots': robots,
 			'os': os,
 			'browser': browser,
+			'device': device,
 		}
 
 	def _fetchURL(self, url):
