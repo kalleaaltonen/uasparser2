@@ -285,6 +285,7 @@ class UASparser(object):
 		robots = get_robots_object(data['robots'], data['os'], robot_template, os_template)
 		os = get_matching_object(data['os_reg'], data['os'], os_template)
 		browser = get_matching_object(data['browser_reg'], data['browser'], browser_template, data['browser_type'], data['browser_os'])
+		device = get_matching_object(data['device_reg'], data['device'], device_template)
 
 		return {
 			'robots': robots,
